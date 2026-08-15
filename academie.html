@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Académie Manager Revente — Formation achat-revente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0d0e12;
+    --surface: #15171d;
+    --surface-2: #1b1e26;
+    --line: #2a2d37;
+    --text: #f1efe9;
+    --text-muted: #90939f;
+
+    --achat: #e8a33d;
+    --vente: #ef5b5b;
+    --benefice: #4fd67a;
+    --bilan: #6d7bf5;
+    --objectif: #f1c46a;
+    --top: #b98ae0;
+    --suivi: #58b9e8;
+
+    --radius: 14px;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 90% -5%, rgba(232,163,61,.08), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 0% 25%, rgba(109,123,245,.07), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family:'Inter', sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{ color:inherit; }
+  ::selection{ background: var(--achat); color:#161616; }
+  button{ font-family:inherit; cursor:pointer; }
+
+  .wrap{ max-width: 920px; margin:0 auto; padding: 0 28px; }
+
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 26px 28px; max-width: 920px; margin:0 auto;
+  }
+  nav .logo{ font-family:'Fraunces', serif; font-weight:600; font-size:18px; }
+  nav .logo em{ font-style:italic; color: var(--achat); }
+  nav .cta-nav{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+    border:1px solid var(--line); padding:9px 16px; border-radius:100px;
+    background: var(--surface); color: var(--text); border-style:solid;
+  }
+
+  .live-banner{
+    background: linear-gradient(90deg, rgba(232,163,61,.14), rgba(232,163,61,.03));
+    border: 1px solid rgba(232,163,61,.35);
+    border-radius: var(--radius);
+    padding: 16px 22px;
+    display:flex; align-items:center; gap:14px;
+    max-width: 920px; margin: 0 auto 8px;
+  }
+  .live-banner .dot{
+    width:10px; height:10px; border-radius:50%; background: var(--achat);
+    animation: pulse 1.8s infinite; flex-shrink:0;
+  }
+  @keyframes pulse{ 0%,100%{ opacity:1; box-shadow:0 0 0 0 rgba(232,163,61,.5);} 50%{ opacity:.5; box-shadow:0 0 0 6px rgba(232,163,61,0);} }
+  .live-banner p{ font-size: 14.5px; }
+  .live-banner b{ color: var(--achat); }
+
+  .hero{ padding: 60px 0 56px; border-bottom:1px solid var(--line); }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+    letter-spacing:.12em; text-transform:uppercase; color: var(--achat);
+    border:1px solid rgba(232,163,61,.35); background: rgba(232,163,61,.08);
+    padding:6px 12px; border-radius:100px; margin-bottom:26px;
+  }
+  .eyebrow::before{ content:""; width:6px; height:6px; border-radius:50%; background:var(--achat); }
+  h1{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size: clamp(34px, 5.4vw, 54px); line-height:1.06; letter-spacing:-0.01em;
+  }
+  h1 em{ font-style:italic; font-weight:500; color: var(--achat); }
+  .hero p.lede{ margin-top:20px; max-width:56ch; color: var(--text-muted); font-size:16.5px; }
+
+  .hero-stats{ display:flex; gap:32px; margin-top:36px; flex-wrap:wrap; }
+  .hstat b{ display:block; font-family:'Fraunces', serif; font-weight:600; font-size:26px; color: var(--achat); }
+  .hstat span{ font-size:12.5px; color: var(--text-muted); font-family:'IBM Plex Mono', monospace; }
+
+  /* progress bar */
+  .progress-wrap{ margin-top: 40px; }
+  .progress-label{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color: var(--text-muted); margin-bottom:8px;
+  }
+  .progress-label b{ color: var(--achat); }
+  .progress-track{ height:8px; background: var(--surface-2); border-radius:100px; overflow:hidden; border:1px solid var(--line); }
+  .progress-fill{ height:100%; background: linear-gradient(90deg, var(--achat), var(--objectif)); width:0%; transition: width .5s ease; border-radius:100px; }
+
+  section.block{ padding: 64px 0; border-bottom:1px solid var(--line); }
+  section.block:last-of-type{ border-bottom:none; }
+  .tag-num{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px;
+    color: var(--accent, var(--achat)); letter-spacing:.1em; display:block; margin-bottom:10px;
+  }
+  h2{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size: clamp(24px, 3.2vw, 32px); margin-bottom:14px; letter-spacing:-0.01em;
+  }
+  .block > p.lead{ color: var(--text-muted); max-width:62ch; margin-bottom:32px; font-size:15.5px; }
+
+  /* modules — clickable/expandable */
+  .modules{ display:grid; gap: 12px; }
+  .module{
+    background: var(--surface); border:1px solid var(--line); border-radius: var(--radius);
+    overflow:hidden; transition: border-color .25s ease;
+  }
+  .module.done{ border-color: rgba(79,214,122,.4); }
+  .module-head{
+    display:grid; grid-template-columns: 40px 56px 1fr 24px; gap:16px; align-items:center;
+    padding: 18px 20px; width:100%; background:none; border:none; text-align:left; color:inherit;
+  }
+  .check{
+    width:26px; height:26px; border-radius:50%; border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:13px;
+    background: transparent; color: transparent; flex-shrink:0; transition: all .2s ease;
+  }
+  .module.done .check{ background: var(--benefice); border-color: var(--benefice); color:#0d0e12; }
+  .module-head .n{
+    font-family:'Fraunces', serif; font-weight:600; font-size:20px; color: var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); border-radius:50%; width:44px; height:44px;
+  }
+  .module-head .titre{ text-align:left; }
+  .module-head h3{ font-size:16px; font-weight:600; margin-bottom:3px; }
+  .module-head .duree{ font-family:'IBM Plex Mono', monospace; font-size:11px; color: var(--accent); }
+  .chevron{ color: var(--text-muted); transition: transform .25s ease; font-size:14px; }
+  .module.open .chevron{ transform: rotate(180deg); }
+  .module-body{
+    max-height:0; overflow:hidden; transition: max-height .35s ease;
+  }
+  .module.open .module-body{ max-height: 300px; }
+  .module-body-inner{ padding: 0 20px 22px 116px; }
+  @media (max-width: 560px){ .module-body-inner{ padding: 0 20px 22px 20px; } }
+  .module-body-inner p{ font-size:14px; color: var(--text-muted); margin-bottom:14px; }
+  .module-body-inner ul{ list-style:none; display:grid; gap:8px; margin-bottom:16px; }
+  .module-body-inner li{ font-size:13.5px; color: var(--text-muted); display:flex; gap:8px; }
+  .module-body-inner li::before{ content:"→"; color: var(--accent); }
+  .mark-btn{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600;
+    border:1px solid var(--line); background: var(--surface-2); color: var(--text);
+    padding:9px 16px; border-radius:100px;
+  }
+  .module.done .mark-btn{ border-color: rgba(79,214,122,.4); color: var(--benefice); }
+
+  .formats{ display:grid; grid-template-columns: repeat(3,1fr); gap:14px; }
+  @media (max-width:720px){ .formats{ grid-template-columns:1fr; } }
+  .format{
+    background: var(--surface); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 22px 20px;
+  }
+  .format .icon{ font-size:22px; margin-bottom:12px; }
+  .format h3{ font-size:15.5px; font-weight:600; margin-bottom:6px; }
+  .format p{ font-size:13.5px; color: var(--text-muted); }
+
+  .tiers{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width:640px){ .tiers{ grid-template-columns:1fr; } }
+  .tier{
+    background: var(--surface); border:1px solid var(--line); border-radius: var(--radius);
+    padding: 28px 26px;
+  }
+  .tier.premium{ border-color: rgba(232,163,61,.4); }
+  .tier .badge{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; color: var(--accent); margin-bottom:14px; display:block;
+  }
+  .tier h3{ font-family:'Fraunces', serif; font-weight:600; font-size:24px; margin-bottom:6px; }
+  .tier .prix{ font-size:14px; color: var(--text-muted); margin-bottom:20px; }
+  .tier ul{ list-style:none; display:grid; gap:10px; }
+  .tier li{ font-size:14px; color: var(--text-muted); display:flex; gap:10px; }
+  .tier li::before{ content:"✓"; color: var(--accent); font-weight:600; }
+  .tier .soon{
+    margin-top:20px; font-family:'IBM Plex Mono', monospace; font-size:11.5px;
+    color: var(--text-muted); border:1px dashed var(--line); border-radius:8px; padding:8px 12px;
+    text-align:center;
+  }
+
+  /* FAQ accordion */
+  .faq{ display:grid; gap:10px; }
+  .faq-item{
+    background: var(--surface); border:1px solid var(--line); border-radius: var(--radius);
+    overflow:hidden;
+  }
+  .faq-q{
+    width:100%; display:flex; justify-content:space-between; align-items:center;
+    background:none; border:none; color:inherit; padding:18px 22px; text-align:left;
+  }
+  .faq-q b{ font-size:15px; font-weight:600; }
+  .faq-q .chevron{ color: var(--text-muted); transition: transform .25s ease; }
+  .faq-item.open .faq-q .chevron{ transform: rotate(180deg); }
+  .faq-a{ max-height:0; overflow:hidden; transition: max-height .3s ease; }
+  .faq-item.open .faq-a{ max-height:200px; }
+  .faq-a p{ padding: 0 22px 18px; font-size:14px; color: var(--text-muted); }
+
+  .cta{ text-align:center; padding: 76px 0 96px; }
+  .cta h2{ font-size: clamp(26px, 4vw, 38px); }
+  .cta p{ color: var(--text-muted); max-width:50ch; margin:14px auto 28px; font-size:15.5px; }
+  .cta .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono', monospace; font-size:13.5px; font-weight:600;
+    background: var(--achat); color:#161616; padding:14px 26px; border-radius:100px;
+    border:none;
+  }
+
+  footer{ border-top:1px solid var(--line); padding:40px 0; text-align:center; }
+  footer p{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color: var(--text-muted); }
+
+  .reveal{ opacity:0; transform:translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in{ opacity:1; transform:none; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .reveal{ opacity:1; transform:none; transition:none; }
+    .live-banner .dot{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Académie <em>Manager Revente</em></div>
+  <button class="cta-nav mono">REJOINDRE →</button>
+</nav>
+
+<div class="wrap">
+  <div class="live-banner reveal">
+    <span class="dot"></span>
+    <p><b>Prochaine session en direct</b> — Vendredi, 22h00 sur le vocal formation Discord</p>
+  </div>
+
+  <section class="hero">
+    <span class="eyebrow">Formation achat-revente</span>
+    <h1>Apprends à <em>acheter</em>,<br>revendre, et vivre de ça.</h1>
+    <p class="lede">Une formation construite sur ce qu'on fait vraiment, tous les jours — pas de théorie déconnectée. On t'apprend le sourcing, la fixation de prix, la négociation, et le suivi, avec les mêmes outils qu'on utilise nous-mêmes.</p>
+
+    <div class="hero-stats">
+      <div class="hstat"><b>100%</b><span>Pratique, pas de blabla</span></div>
+      <div class="hstat"><b>Live</b><span>Sessions en vocal Discord</span></div>
+      <div class="hstat"><b>Bot inclus</b><span>Outils fournis dès le départ</span></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>TA PROGRESSION</span>
+        <span><b id="progressCount">0</b>/4 modules terminés</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+  </section>
+
+  <section class="block reveal" style="--accent: var(--achat)">
+    <span class="tag-num">Le programme</span>
+    <h2>Ce que tu vas apprendre</h2>
+    <p class="lead">Quatre modules, dans l'ordre où tu en as réellement besoin. Clique sur un module pour voir le détail, coche-le une fois vu.</p>
+
+    <div class="modules" id="modulesList">
+
+      <div class="module" data-module="1" style="--accent: var(--achat)">
+        <button class="module-head">
+          <span class="check">✓</span>
+          <span class="n">01</span>
+          <span class="titre">
+            <h3>Sourcing & fournisseurs</h3>
+            <span class="duree">Session 1</span>
+          </span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="module-body">
+          <div class="module-body-inner">
+            <p>Où acheter, comment repérer un bon vendeur, éviter les pièges classiques des débutants.</p>
+            <ul>
+              <li>Identifier des fournisseurs fiables</li>
+              <li>Lire les avis correctement</li>
+              <li>Repérer les délais de livraison réalistes</li>
+            </ul>
+            <button class="mark-btn">Marquer comme vu</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="module" data-module="2" style="--accent: var(--suivi)">
+        <button class="module-head">
+          <span class="check">✓</span>
+          <span class="n">02</span>
+          <span class="titre">
+            <h3>Fixer le bon prix</h3>
+            <span class="duree">Session 2</span>
+          </span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="module-body">
+          <div class="module-body-inner">
+            <p>Calculer une marge réaliste, comprendre ce qui se vend et à quel prix sur le marché.</p>
+            <ul>
+              <li>Calculer ton prix de revient réel</li>
+              <li>Comparer avec des annonces similaires</li>
+              <li>Fixer une marge qui reste attractive</li>
+            </ul>
+            <button class="mark-btn">Marquer comme vu</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="module" data-module="3" style="--accent: var(--vente)">
+        <button class="module-head">
+          <span class="check">✓</span>
+          <span class="n">03</span>
+          <span class="titre">
+            <h3>Vente & négociation</h3>
+            <span class="duree">Session 3</span>
+          </span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="module-body">
+          <div class="module-body-inner">
+            <p>Répondre vite, gérer les négos sans se faire avoir, conclure une vente proprement.</p>
+            <ul>
+              <li>Répondre dans les premières minutes</li>
+              <li>Négocier sans brader ta marge</li>
+              <li>Conclure et organiser l'envoi</li>
+            </ul>
+            <button class="mark-btn">Marquer comme vu</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="module" data-module="4" style="--accent: var(--benefice)">
+        <button class="module-head">
+          <span class="check">✓</span>
+          <span class="n">04</span>
+          <span class="titre">
+            <h3>Suivi & bilan</h3>
+            <span class="duree">Session 4</span>
+          </span>
+          <span class="chevron">▾</span>
+        </button>
+        <div class="module-body">
+          <div class="module-body-inner">
+            <p>Utiliser le bot pour suivre tes chiffres réels, fixer un objectif, et savoir où t'en es.</p>
+            <ul>
+              <li>Enregistrer chaque achat et vente</li>
+              <li>Lire ton bilan sans se tromper</li>
+              <li>Fixer un objectif mensuel réaliste</li>
+            </ul>
+            <button class="mark-btn">Marquer comme vu</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="block reveal" style="--accent: var(--bilan)">
+    <span class="tag-num">Le format</span>
+    <h2>Comment ça se passe concrètement</h2>
+
+    <div class="formats">
+      <div class="format">
+        <div class="icon">🎙️</div>
+        <h3>Sessions en direct</h3>
+        <p>En vocal sur Discord, questions en live, pas des vidéos préenregistrées qu'on regarde seul.</p>
+      </div>
+      <div class="format">
+        <div class="icon">🤖</div>
+        <h3>Outils fournis</h3>
+        <p>Accès direct au bot Manager Revente pour appliquer ce que tu apprends dès le premier jour.</p>
+      </div>
+      <div class="format">
+        <div class="icon">👥</div>
+        <h3>Communauté active</h3>
+        <p>Tu n'apprends pas seul — le reste de la communauté est là pour partager, aider, motiver.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block reveal" style="--accent: var(--objectif)">
+    <span class="tag-num">L'accès</span>
+    <h2>Formule actuelle</h2>
+    <p class="lead">La formation est gratuite pour le moment. Une formule premium arrivera plus tard, avec du contenu en plus.</p>
+
+    <div class="tiers">
+      <div class="tier">
+        <span class="badge mono">Actuel</span>
+        <h3>Accès Communauté</h3>
+        <div class="prix">Gratuit</div>
+        <ul>
+          <li>Sessions live du programme complet</li>
+          <li>Accès au bot Manager Revente</li>
+          <li>Communauté Discord active</li>
+          <li>Historique de tes propres ventes</li>
+        </ul>
+      </div>
+      <div class="tier premium">
+        <span class="badge mono">Bientôt</span>
+        <h3>Accès Premium</h3>
+        <div class="prix">À venir</div>
+        <ul>
+          <li>Contenu formation approfondi</li>
+          <li>Salon fournisseurs exclusif</li>
+          <li>Suivi personnalisé</li>
+        </ul>
+        <div class="soon">🔒 Pas encore disponible</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block reveal" style="--accent: var(--top)">
+    <span class="tag-num">Questions fréquentes</span>
+    <h2>Avant de rejoindre</h2>
+
+    <div class="faq" id="faqList">
+      <div class="faq-item">
+        <button class="faq-q"><b>Faut-il déjà avoir de l'expérience ?</b><span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Non, le module 1 part de zéro. Le programme est pensé pour les débutants complets.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><b>Faut-il de l'argent pour commencer ?</b><span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Un petit budget de départ aide pour les premiers achats, mais rien d'énorme — on parle de petites sommes au démarrage.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q"><b>Je rate une session, c'est grave ?</b><span class="chevron">▾</span></button>
+        <div class="faq-a"><p>Non, les modules ne sont pas liés à une date fixe unique, tu peux rattraper avec un membre de l'équipe.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta reveal">
+    <h2>Ta première session, c'est vendredi.</h2>
+    <p>22h00, sur le vocal formation. Viens avec tes questions, pas besoin d'être prêt à 100%.</p>
+    <button class="btn">🎙️ Rejoindre le vocal vendredi</button>
+  </section>
+</div>
+
+<footer>
+  <p class="mono">ACADÉMIE MANAGER REVENTE</p>
+</footer>
+
+<script>
+  // reveal on scroll
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  items.forEach(el => io.observe(el));
+
+  // modules : ouverture/fermeture au clic
+  document.querySelectorAll('.module-head').forEach(head => {
+    head.addEventListener('click', () => {
+      head.closest('.module').classList.toggle('open');
+    });
+  });
+
+  // modules : marquer comme vu + progression sauvegardée
+  const STORAGE_KEY = 'academie-progression';
+  function chargerProgression(){
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch(e){ return {}; }
+  }
+  function sauvegarderProgression(p){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); } catch(e){}
+  }
+  function majBarre(){
+    const total = document.querySelectorAll('.module').length;
+    const faits = document.querySelectorAll('.module.done').length;
+    document.getElementById('progressCount').textContent = faits;
+    document.getElementById('progressFill').style.width = (faits/total*100) + '%';
+  }
+
+  const progression = chargerProgression();
+  document.querySelectorAll('.module').forEach(mod => {
+    const id = mod.dataset.module;
+    if (progression[id]) mod.classList.add('done');
+  });
+  majBarre();
+
+  document.querySelectorAll('.mark-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const mod = btn.closest('.module');
+      const id = mod.dataset.module;
+      mod.classList.toggle('done');
+      progression[id] = mod.classList.contains('done');
+      sauvegarderProgression(progression);
+      majBarre();
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.addEventListener('click', () => {
+      q.closest('.faq-item').classList.toggle('open');
+    });
+  });
+</script>
+
+</body>
+</html>
